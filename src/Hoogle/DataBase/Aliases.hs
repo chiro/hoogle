@@ -1,11 +1,16 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, CPP #-}
 
 module Hoogle.DataBase.Aliases(
     Aliases, createAliases, normAliases
     ) where
 
 import Hoogle.Type.All
+
+#if MIN_VERSION_containers(0,5,0)
+import qualified Data.Map.Strict as Map
+#else
 import qualified Data.Map as Map
+#endif
 import Hoogle.Store.All
 import Data.Generics.Uniplate
 import General.Base
@@ -15,7 +20,11 @@ import Safe
 newtype Aliases = Aliases {fromAliases :: Map.Map String Alias}
 
 instance NFData Aliases where
+#if MIN_VERSION_containers(0,5,0)
+    rnf (Aliases a) = ()
+#else
     rnf (Aliases a) = rnf a
+#endif
 
 instance Store Aliases where
     put = put . fromAliases

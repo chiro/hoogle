@@ -1,4 +1,4 @@
-
+{-# LANGUAGE CPP #-}
 module Hoogle.DataBase.Instances(
     Instances, createInstances,
     normInstances, hasInstance
@@ -7,14 +7,22 @@ module Hoogle.DataBase.Instances(
 import General.Base
 import Hoogle.Type.All
 import Hoogle.Store.All
+#if MIN_VERSION_containers(0,5,0)
+import qualified Data.Map.Strict as Map
+#else
 import qualified Data.Map as Map
+#endif
 
 
 -- Map type [classes]
 newtype Instances = Instances {fromInstances :: Map.Map String [String]}
 
 instance NFData Instances where
+#if MIN_VERSION_containers(0,5,0)
+    rnf (Instances a) = ()
+#else
     rnf (Instances a) = rnf a
+#endif
 
 instance Show Instances where
     show (Instances mp) = unlines $ map f $ Map.toList mp

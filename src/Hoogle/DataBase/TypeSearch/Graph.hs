@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveDataTypeable, CPP #-}
 {-|
     Search for a type signature and context through a graph.
 
@@ -16,7 +16,11 @@ import Hoogle.DataBase.TypeSearch.Result
 import Hoogle.Type.All
 import Data.Generics.Uniplate
 import Hoogle.Store.All
+#if MIN_VERSION_containers(0,5,0)
+import qualified Data.Map.Strict as Map
+#else
 import qualified Data.Map as Map
+#endif
 import General.Base
 import General.Util
 
@@ -30,7 +34,11 @@ data Node = Node [Type] [(Once EntryInfo,ArgPos)]
 
 
 instance NFData Graph where
+#if MIN_VERSION_containers(0,5,0)
+    rnf (Graph a) = ()
+#else
     rnf (Graph a) = rnf a
+#endif
 
 instance NFData Node where
     rnf (Node a b) = rnf (a,b)
